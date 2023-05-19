@@ -197,25 +197,17 @@ const showCardInfo = (obj) => {
     starsEl.innerHTML += '<i class="fa-solid fa-star"></i>'
   };
 
-  let count = 0;
-
   buttonBuyEl.addEventListener('click', (e) => {
-    if (count === 0) {
-      quantity = inputstockEl.value;
-      stock = obj.stock;
-      if (quantity <= stock) {
-        addCart(e);
-        count++
-      } else {
-        alert('Attenzione la quantità che si vuole comprare supera la quantità disponibile. ')
-      }
+    quantity = inputstockEl.value;
+    stock = obj.stock;
+    if (quantity <= stock) {
+      addCart(e);
     } else {
-      buttonBuyEl.removeEventListener('click', (e) => {
-        addCart(e);
-        count = 0;
-      });
+      alert('Attenzione la quantità che si vuole comprare supera la quantità disponibile. Verrà inserita la quantità massima disponibile nel carrello.')
+      quantity = obj.stock;
+      addCart(e);
     }
-  });
+  }, { once: true });
 
   wrapButtonEl.append(inputstockEl, buttonBuyEl);
   wrapTextEl.append(titleEl, descriptionEl, starsEl, stockEl, brandEL, categoryEl);
