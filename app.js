@@ -1,3 +1,16 @@
+const qS = el => document.querySelector(el);
+const cE = el => document.createElement(el);
+
+const createEl = (type, cls = null, textContent = null, parent = null, ...attrs) => {
+  const element = cE(type);
+  element.className = cls
+  element.textContent = textContent;
+  attrs.length > 0 ? attrs.forEach(attr => element.setAttribute(attr?.name, attr?.value)) : '';
+  element
+  parent?.appendChild(element);
+  return element;
+};
+
 /**
  * Chiamata fetch che salva tutti i prodotti all'interno della lista listEl.
  * Cicla sulla lista e crea le varie card dentro cardWrapper.
@@ -32,43 +45,19 @@ const createCardFnc = () => {
  * @returns {Element}
  */
 const createCard = (obj) => {
-  const cardEl = cE('div');
-  const figureEl = cE('figure');
-  const imgEl = cE('img');
-  const textWrapEl = cE('div');
-  const cardTitleEL = cE('h2');
-  const descriptionEl = cE('p');
-  const starsWrap = cE('h2');
-  const cardPriceWrap = cE('div');
-  const price = cE('h2');
-
-  cardEl.className = 'card';
-  figureEl.className = 'card__figure';
-  imgEl.className = 'card__img';
-  cardTitleEL.className = 'card_title';
-  descriptionEl.className = 'description';
-  textWrapEl.className = 'card__text';
-  cardPriceWrap.className = 'card__price';
-  starsWrap.className = 'stars_el'
-
-  imgEl.src = obj.thumbnail;
-  imgEl.alt = obj.title;
-
-  cardEl.setAttribute('id', obj.id);
-
-  cardTitleEL.textContent = obj.title;
-  descriptionEl.textContent = obj.description;
+  const cardEl = createEl('div', 'card', null, null, { name: 'id', value: `${obj.id}` });
+  const figureEl = createEl('figure', 'card__figure', null, cardEl);
+  const imgEl = createEl('img', 'card__img', null, figureEl, { name: 'src', value: `${obj.thumbnail}` }, { name: 'alt', value: `${obj.title}` });
+  const textWrapEl = createEl('div', 'card__text', null, cardEl);
+  const cardTitleEl = createEl('h2', 'card_title', `${obj.title}`, textWrapEl);
+  const descriptionEl = createEl('p', 'description', `${obj.description}`, textWrapEl);
+  const starsWrap = createEl('h2', 'stars_el', null, textWrapEl);
+  const cardPriceWrap = createEl('div', 'card__price', null, textWrapEl);
+  const price = createEl('h2', null, `${obj.price} €`, cardPriceWrap);
 
   for (let i = 0; i <= Math.floor(obj.rating); i++) {
     starsWrap.innerHTML += '<i class="fa-regular fa-star"></i>'
   };
-
-  price.textContent = `${obj.price} €`;
-
-  figureEl.appendChild(imgEl);
-  cardPriceWrap.append(price)
-  textWrapEl.append(cardTitleEL, descriptionEl, starsWrap, cardPriceWrap);
-  cardEl.append(figureEl, textWrapEl);
 
   return cardEl;
 }
@@ -82,35 +71,19 @@ const createCard = (obj) => {
  * @returns {Element}
  */
 const createCart = (obj) => {
-  const cartEl = cE('div');
-  cartEl.className = 'cart_elemet_wrap'
-
-  const imgEl = cE('img');
-  imgEl.className = 'img_cart_el';
-  imgEl.src = obj.thumbnail;
-
-  const textEl = cE('div');
-  textEl.className = 'text_cart_el'
-
-  const titleEl = cE('h5');
-  titleEl.textContent = obj.title;
-
-  const priceEl = cE('h5');
-  priceEl.textContent = `${obj.price} €`;
-
-  const quantityEl = cE('h2');
-  quantityEl.textContent = quantity <= 0 ? 1 : quantity;
-
-  const delEl = cE('div');
+  const cartEl = createEl('div', 'cart_elemet_wrap');
+  const imgEl = createEl('img', 'img_cart_el', null, cartEl, { name: 'src', value: `${obj.thumbnail}` }, { name: 'alt', value: `${obj.title}` });
+  const textEl = createEl('div', 'text_cart_el', null, cartEl);
+  const titleEl = createEl('h5', null, `${obj.title}`, textEl);
+  const priceEl = createEl('h5', null, `${obj.price} €`, textEl);
+  const quantityEl = createEl('h2', null, `${quantity}`, cartEl);
+  const delEl = createEl('div', 'del_cart', null, cartEl)
   delEl.innerHTML = '<i class="fa-solid fa-trash"></i>'
-  delEl.className = 'del_cart'
 
   delEl.addEventListener('click', () => {
     modal.removeChild(cartEl);
   })
 
-  textEl.append(titleEl, priceEl);
-  cartEl.append(imgEl, textEl, quantityEl, delEl);
   return cartEl;
 }
 
@@ -132,65 +105,30 @@ const addCart = (e) => {
  * @param {object} obj
  */
 const showCardInfo = (obj) => {
-  const overlayEl = cE('div');
-  const wrapShowEl = cE('div');
-  const wrapImageEl = cE('div');
-  const figureThumbEl = cE('figure');
-  const thumbnailEl = cE('img');
-  const wrapMiniSliderEl = cE('div');
-  const wrapInfoEl = cE('div');
-  const wrapTextEl = cE('div');
-  const titleEl = cE('h1');
-  const descriptionEl = cE('p');
-  const starsEl = cE('h2');
-  const stockEl = cE('p');
-  const brandEL = cE('h2');
-  const categoryEl = cE('h3');
-  const wrapButtonEl = cE('div');
-  const inputstockEl = cE('input');
-  const buttonBuyEl = cE('button');
-  const buttonReturn = cE('button');
+  const overlayEl = createEl('div', 'overlay', null, rootEl);
+  const wrapShowEl = createEl('div', 'wrap_show', null, overlayEl, { name: 'id', value: `${obj.id}` });
+  const wrapImageEl = createEl('div', 'wrap_image', null, wrapShowEl);
+  const figureThumbEl = createEl('figure', 'figure_thumb', null, wrapImageEl);
+  const thumbnailEl = createEl('img', 'thumbnail', null, figureThumbEl, { name: 'src', value: `${obj.thumbnail}` }, { name: 'alt', value: `${obj.title}` });
+  const wrapMiniSliderEl = createEl('div', 'wrap_miniSlide', null, wrapImageEl);
+  const wrapInfoEl = createEl('div', 'wrap_info', null, wrapShowEl);
+  const wrapTextEl = createEl('div', 'wrap_text', null, wrapInfoEl);
+  const titleEl = createEl('h1', null, `${obj.title}`, wrapTextEl);
+  const descriptionEl = createEl('p', null, `${obj.description}`, wrapTextEl);
+  const starsEl = createEl('h2', 'stars', null, wrapTextEl);
+  const stockEl = createEl('p', null, `disponibilità n. ${obj.stock}`, wrapTextEl);
+  const brandEL = createEl('h2', null, `brand: ${obj.brand}`, wrapTextEl);
+  const categoryEl = createEl('h3', null, `categoria: ${obj.category}`, wrapTextEl);
+  const wrapButtonEl = createEl('div', 'wrap_button', null, wrapInfoEl);
+  const inputstockEl = createEl('input', 'stock_input', null, wrapButtonEl, { name: 'type', value: 'number' });
+  const buttonBuyEl = createEl('button', 'button_buy', null, wrapButtonEl);
+  const buttonReturn = createEl('button', 'button_return', null, wrapShowEl);
 
-  wrapShowEl.setAttribute('id', obj.id);
-
-  overlayEl.className = 'overlay'
-  wrapShowEl.className = 'wrap_show';
-  wrapImageEl.className = 'wrap_image';
-  figureThumbEl.className = 'figure_thumb';
-  thumbnailEl.className = 'thumbnail';
-  wrapMiniSliderEl.className = 'wrap_miniSlide';
-  wrapInfoEl.className = 'wrap_info';
-  wrapTextEl.className = 'wrap_text';
-  titleEl.className = '';
-  descriptionEl.className = '';
-  starsEl.className = 'stars';
-  stockEl.className = '';
-  brandEL.className = '';
-  categoryEl.className = '';
-  wrapButtonEl.className = 'wrap_button';
-  inputstockEl.className = 'stock_input';
-  buttonBuyEl.className = 'button_buy';
-  buttonReturn.className = 'button_return';
-
-  titleEl.textContent = obj.title;
-  descriptionEl.textContent = obj.description;
-  stockEl.textContent = `disponibilità n. ${obj.stock}`;
-  brandEL.textContent = `brand: ${obj.brand}`;
-  categoryEl.textContent = `categoria: ${obj.category}`;
   buttonBuyEl.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>'
   buttonReturn.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>'
-  inputstockEl.type = 'number';
-  inputstockEl.default = 1;
-
-  thumbnailEl.src = obj.thumbnail;
-  thumbnailEl.alt = obj.title;
 
   for (let i in obj.images) {
-    const miniImage = cE('img');
-    miniImage.className = 'mini_image';
-    miniImage.src = obj.images[i];
-    miniImage.alt = obj.images[i];
-    wrapMiniSliderEl.appendChild(miniImage);
+    const miniImage = createEl('img', 'mini_image', null, wrapMiniSliderEl, { name: 'src', value: `${obj.images[i]}` });
   }
 
   for (let i = 0; i <= Math.floor(obj.rating); i++) {
@@ -209,65 +147,21 @@ const showCardInfo = (obj) => {
     }
   }, { once: true });
 
-  wrapButtonEl.append(inputstockEl, buttonBuyEl);
-  wrapTextEl.append(titleEl, descriptionEl, starsEl, stockEl, brandEL, categoryEl);
-  wrapInfoEl.append(wrapTextEl, wrapButtonEl);
-  figureThumbEl.appendChild(thumbnailEl);
-  wrapImageEl.append(figureThumbEl, wrapMiniSliderEl);
-  wrapShowEl.append(wrapImageEl, wrapInfoEl, buttonReturn);
-  overlayEl.appendChild(wrapShowEl)
-  rootEl.appendChild(overlayEl);
+  wrapMiniSliderEl.addEventListener('click', (e) => thumbnailEl.src = e.target.src)
 
-  wrapMiniSliderEl.addEventListener('click', (e) => {
-    thumbnailEl.src = e.target.src;
-  })
-
-  if (rootEl) {
-    buttonReturn.addEventListener('click', () => rootEl.removeChild(overlayEl));
-  }
-};
-
-/**
- * creazione della modale del carrello
- * @date 18/5/2023 - 11:30:51
- */
-const createModal = () => {
-  modal.className = 'cart_modal';
-  navbar.appendChild(modal);
+  buttonReturn.addEventListener('click', () => rootEl.removeChild(overlayEl));
 };
 
 const createLogin = () => {
-  const loginOverlay = cE('div');
-  const modalLogin = cE('div');
-  const backgroundLogin = cE('img');
-  const imageLogin = cE('img');
-  const loginH2 = cE('h2');
-  const loginTextWrapper = cE('form');
-  const userName = cE('input');
-  const password = cE('input');
-  const submit = cE('input');
-
-  loginOverlay.className = 'login_overlay';
-  modalLogin.className = 'modal_login';
-  backgroundLogin.className = 'background_login';
-  imageLogin.className = 'image_login';
-  loginTextWrapper.className = 'login_text_wrap';
-  userName.className = '';
-  password.className = '';
-  submit.className = '';
-
-  backgroundLogin.src = './img/—Pngtree—purple abstract wave frame-elegant luxury_6549678.png';
-  backgroundLogin.alt = 'Pngtree—purple abstract wave frame';
-  imageLogin.src = './img/4d95e433-331d-4e89-a182-ca346c65614b@w1000.png'
-  imageLogin.alt = '4d95e433-331d-4e89-a182-ca346c65614b@w1000'
-  userName.setAttribute('placeholder', 'username');
-  password.setAttribute('placeholder', 'password');
-  loginH2.textContent = 'login';
-  submit.textContent = 'submit';
-
-  userName.setAttribute('type', 'text');
-  password.setAttribute('type', 'password');
-  submit.setAttribute('type', 'submit');
+  const loginOverlay = createEl('div', 'login_overlay', null, body);
+  const modalLogin = createEl('div', 'modal_login', null, body);
+  const backgroundLogin = createEl('img', 'background_login', null, modalLogin, { name: 'src', value: './img/—Pngtree—purple abstract wave frame-elegant luxury_6549678.png' }, { name: 'alt', value: 'Pngtree—purple abstract wave frame' });
+  const imageLogin = createEl('img', 'image_login', null, modalLogin, { name: 'src', value: './img/4d95e433-331d-4e89-a182-ca346c65614b@w1000.png' }, { name: 'alt', value: '4d95e433-331d-4e89-a182-ca346c65614b@w1000' });
+  const loginTextWrapper = createEl('form', 'login_text_wrap', null, modalLogin);
+  const loginH2 = createEl('h2', null, 'login', loginTextWrapper);
+  const userName = createEl('input', null, null, loginTextWrapper, { name: 'type', value: 'text' }, { name: 'placeholder', value: 'username' });
+  const password = createEl('input', null, null, loginTextWrapper, { name: 'type', value: 'password' }, { name: 'placeholder', value: 'password' });
+  const submit = createEl('input', null, 'submit', loginTextWrapper, { name: 'type', value: 'submit' });
 
   cardWrapper.textContent = '';
 
@@ -278,7 +172,7 @@ const createLogin = () => {
       user.password.toLowerCase() === e.srcElement[1].value.toLowerCase()
     )
     if (isAuth) {
-      setInterval(() => {
+      setTimeout(() => {
         body.removeChild(loginOverlay);
         body.removeChild(modalLogin);
         createCardFnc();
@@ -288,21 +182,12 @@ const createLogin = () => {
       alert('username or password incorrect');
     }
   });
-
-
-  loginTextWrapper.append(loginH2, userName, password, submit);
-  modalLogin.append(backgroundLogin, imageLogin, loginTextWrapper);
-  body.append(loginOverlay, modalLogin);
 };
-
-
-const qS = el => document.querySelector(el);
-const cE = el => document.createElement(el);
-
 
 const cardWrapper = qS('.card_wrapper');
 const filterForm = qS('.filter__form');
 const navbar = qS('.navbar');
+const modal = createEl('div', 'cart_modal', null, navbar)
 const selectCategory = qS('.filter__select');
 const searchbar = qS('.navbar__input');
 const burgher = qS('.burgher');
@@ -310,10 +195,9 @@ const navLinks = qS('.navbar__links__ul');
 const cartButton = qS('.button_buy');
 const body = qS('body');
 const cart = qS('.cart');
-const modal = cE('div');
 let listEl = [];
 const rootEl = qS('#root');
-let quantity = 0;
+let quantity = 1;
 let stock = 0;
 const dataUsers = [
   {
@@ -333,6 +217,7 @@ const dataUsers = [
   },
 ];
 
+createLogin();
 
 fetch('https://dummyjson.com/products/categories')
   .then(res => res.json())
@@ -350,16 +235,12 @@ fetch('https://dummyjson.com/products/categories')
     }
   });
 
-createLogin();
-
-createModal();
-
 selectCategory.addEventListener('change', (e) => {
   if (e.target.value === '') {
     cardWrapper.textContent = "";
     listEl.map(obj => cardWrapper.appendChild(createCard(obj)))
   } else {
-    /* Metoo con chiamata API */
+    /* Metoo con chiamata API ****************************************/
     // const category = e.target.value;
     // fetch(`https://dummyjson.com/products/category/${category}`)
     //   .then(res => res.json())
@@ -380,7 +261,7 @@ searchbar.addEventListener('input', (e) => {
   if (e.target.value === '') {
     createCardFnc();
   } else {
-    /** metodo ricerca con chiamata API e query */
+    /** metodo ricerca con chiamata API e query **************************************/
     // const query = e.target.value;
     // fetch(`https://dummyjson.com/products/search?q=${query}`)
     //   .then(res => res.json())
@@ -391,7 +272,7 @@ searchbar.addEventListener('input', (e) => {
     //       e.preventDefault();
     //     })
     //   });
-    /** Metodo di ricerca con filter nella lista oggetti */
+    /** Metodo di ricerca con filter nella lista oggetti *****************************/
     cardWrapper.textContent = "";
     listEl
       .filter((el) => el.description.toLowerCase().includes(e.target.value.toLowerCase()))
@@ -399,10 +280,6 @@ searchbar.addEventListener('input', (e) => {
   }
 })
 
-burgher.addEventListener('click', (e) => {
-  navLinks.classList.toggle('active');
-});
+burgher.addEventListener('click', (e) => navLinks.classList.toggle('active'));
 
-cart.addEventListener('click', (e) => {
-  modal.classList.toggle('cart_active');
-});
+cart.addEventListener('click', (e) => modal.classList.toggle('cart_active'));
